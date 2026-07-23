@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class Locomotion : MonoBehaviour
 {
@@ -10,6 +11,12 @@ public class Locomotion : MonoBehaviour
     public float rayDetectionSize = 0.05f;
     [SerializeField]
     public Vector2 DefaultResetPosition;
+    [SerializeField]
+    public float enterDoorOffset = 0.04f;
+    [SerializeField]
+    public GameObject levelCompleteScreen;
+    [SerializeField]
+    public TextMeshProUGUI resultText;
     private Input inputController;
     private bool isDashing = false;
     private bool touchingWall = false;
@@ -18,6 +25,8 @@ public class Locomotion : MonoBehaviour
     private Rigidbody2D rb;
     private EnergyController energyController;
     private SpriteAnimator spriteAnimator;
+    private LaunchArcController launchRenderer;
+    private GameObject enterDoor;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -25,6 +34,13 @@ public class Locomotion : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         energyController = GetComponent<EnergyController>();
         spriteAnimator = GetComponent<SpriteAnimator>();
+        launchRenderer = GetComponent<LaunchArcController>();
+        enterDoor = GameObject.Find("EnterDoor");
+        if (enterDoor)
+        {
+            rb.position = new Vector2(enterDoor.transform.position.x, enterDoor.transform.position.y + enterDoorOffset);
+        }
+
     }
 
     // Update is called once per frame
@@ -35,14 +51,11 @@ public class Locomotion : MonoBehaviour
         {
             isDashing = false;
         }
-        if (inputController.PressedReset)
-        {
-            ResetPosition(DefaultResetPosition);
-        }
         PlayerPosition = gameObject.transform.position;
         if (touchingGround || touchingWall)
         {
             isDashing = false;
+            launchRenderer.EnableLineRender(true);
         }
         if (inputController.PressedDash && !isDashing)
         {
@@ -51,6 +64,7 @@ public class Locomotion : MonoBehaviour
             touchingGround = false;
             touchingWall = false;
             rb.AddForce(dashVector, ForceMode2D.Impulse);
+            launchRenderer.EnableLineRender(false);
         }
         if (!isDashing && Mathf.Abs(inputController.MoveVector.x) > 0.001 && !inputController.PressedDash)
         {
@@ -80,6 +94,11 @@ public class Locomotion : MonoBehaviour
             {
                 spriteAnimator.SetNeutralSprite();
             }
+        }
+
+        if (energyController.EnergyAmount == 0)
+        {
+            ShowEndScreen(false);
         }
     }
 
@@ -121,12 +140,27 @@ public class Locomotion : MonoBehaviour
             {
                 energyController.AddEnergyFromFallenFoe();
                 Destroy(collider.gameObject);
+            } else
+            {
+                energyController.RemoveEnergyFromCollisionWithFoe();
             }
+        }
+        if (collider.tag == "Exit")
+        {
+            ShowEndScreen(true);
         }
     }
 
-    void ResetPosition(Vector2 resetPos)
+    private void ShowEndScreen(bool hasWon)
     {
-        gameObject.transform.position = resetPos;
+        levelCompleteScreen.SetActive(true);
+        Time.timeScale = 0f;
+        if (hasWon)
+        {
+            resultText.text = "YOU WIN!";
+        } else
+        {
+            resultText.text = "YOU LOSE";
+        }
     }
 }

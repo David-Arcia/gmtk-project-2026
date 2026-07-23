@@ -11,6 +11,8 @@ public class EnergyController : MonoBehaviour
     [SerializeField]
     public float enemyEnergyReplenishment = 15;
     [SerializeField]
+    public float enemyEnergyDamage = 25;
+    [SerializeField]
     public GameObject energyFillBarUI;
     private RectTransform fillBarTransform;
     private Vector2 initfillBarPos;
@@ -41,6 +43,15 @@ public class EnergyController : MonoBehaviour
         if (EnergyAmount > MaxEnergy)
         {
             EnergyAmount = MaxEnergy;
+        }
+    }
+
+    public void RemoveEnergyFromCollisionWithFoe()
+    {
+        EnergyAmount -= enemyEnergyDamage;
+        if (EnergyAmount < 0)
+        {
+            EnergyAmount = 0;
         }
     }
 

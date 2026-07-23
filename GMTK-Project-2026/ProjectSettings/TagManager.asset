@@ -6,7 +6,7 @@ TagManager:
   tags:
   - Terrain
   - Enemy
-  - Exiit
+  - Exit
   layers:
   - Default
   - TransparentFX
