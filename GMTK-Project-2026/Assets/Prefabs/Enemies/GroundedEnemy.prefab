@@ -182,3 +182,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MoveSideToSide
   amplidtude: 0.5
   frequency: 1
+  flipDirections: 0

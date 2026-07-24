@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 9086798943193101487}
   - component: {fileID: 8505949291337265355}
   - component: {fileID: 1517839294443451252}
+  - component: {fileID: 2518761724622257527}
   m_Layer: 0
   m_Name: spikeR
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -123,7 +124,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -139,15 +140,42 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.029563287, y: -0.04}
+    - - {x: -0.032824755, y: -0.039673835}
       - {x: 0.031520188, y: -0.04097844}
       - {x: 0.031139025, y: -0.028335541}
       - {x: 0.021409648, y: 0.010873428}
       - {x: 0.013040373, y: 0.040978428}
       - {x: -0.010105055, y: 0.040652268}
       - {x: -0.020687565, y: 0.010165818}
-      - {x: -0.030215602, y: -0.029242644}
+      - {x: -0.031520188, y: -0.028590372}
   m_UseDelaunayMesh: 1
+--- !u!50 &2518761724622257527
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1354120893621952493}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!1 &3805102966340468052
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,9 +187,10 @@ GameObject:
   - component: {fileID: 1950501170134434396}
   - component: {fileID: 2654317050821731864}
   - component: {fileID: 8135799796817972396}
+  - component: {fileID: 3284651934012702623}
   m_Layer: 0
   m_Name: spikeL
-  m_TagString: Untagged
+  m_TagString: Spike
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -271,7 +300,7 @@ PolygonCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -288,14 +317,41 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: -0.029563287, y: -0.04}
-      - {x: 0.031520188, y: -0.04097844}
-      - {x: 0.031139025, y: -0.028335541}
+      - {x: 0.031520188, y: -0.040652297}
+      - {x: 0.03276976, y: -0.030292422}
       - {x: 0.021409648, y: 0.010873428}
       - {x: 0.013040373, y: 0.040978428}
       - {x: -0.010105055, y: 0.040652268}
       - {x: -0.020687565, y: 0.010165818}
       - {x: -0.030215602, y: -0.029242644}
   m_UseDelaunayMesh: 1
+--- !u!50 &3284651934012702623
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3805102966340468052}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!1001 &7483608345513379638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -355,6 +411,10 @@ PrefabInstance:
     - target: {fileID: 6429076766587361580, guid: 562e79558bc510a43ba646e4cea2bc50, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9066183403821451240, guid: 562e79558bc510a43ba646e4cea2bc50, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

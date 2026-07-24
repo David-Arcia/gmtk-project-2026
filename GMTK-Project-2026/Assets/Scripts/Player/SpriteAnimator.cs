@@ -14,6 +14,8 @@ public class SpriteAnimator : MonoBehaviour
     public float ghostSpriteSpacingMultiplier = 1;
     [SerializeField]
     public GameObject ghostrSpritePrefab;
+    [SerializeField]
+    public Color damagedColor;
     private GameObject[] ghostSpriteObjects;
     private SpriteRenderer renderer;
     private Rigidbody2D rb;
@@ -84,5 +86,17 @@ public class SpriteAnimator : MonoBehaviour
     {
         renderer.sprite = aerialSprite;
         renderer.flipX = flip;
+    }
+
+    public void SetDamaged(bool damaged)
+    {
+        if (damaged)
+        {
+            renderer.color = damagedColor;
+        }
+        else
+        {
+            renderer.color = Color.white;
+        }
     }
 }

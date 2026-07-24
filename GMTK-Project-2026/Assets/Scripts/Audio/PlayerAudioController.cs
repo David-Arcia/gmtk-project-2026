@@ -1,14 +1,20 @@
 using UnityEngine;
 
 public enum AudioEffects
-    {
-        DASH
-    }
+{
+    DASH,
+    ENEMY_DEATH,
+    HURT
+}
 
 public class PlayerAudioController : MonoBehaviour
 {
     [SerializeField]
     AudioClip dashSound;
+    [SerializeField]
+    AudioClip enemyDeathSound;
+    [SerializeField]
+    AudioClip hurtSound;
     private AudioSource audioSource;
 
     void Awake()
@@ -27,6 +33,12 @@ public class PlayerAudioController : MonoBehaviour
         {
             case AudioEffects.DASH:
                 clipToUse = dashSound;
+                break;
+            case AudioEffects.ENEMY_DEATH:
+                clipToUse = enemyDeathSound;
+                break;
+            case AudioEffects.HURT:
+                clipToUse = hurtSound;
                 break;
             default:
                 Debug.LogError("Unknown audio effect requested");

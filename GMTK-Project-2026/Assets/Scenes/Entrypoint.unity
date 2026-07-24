@@ -466,9 +466,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Using the Kenney UI Pack and Pico-8 Platformer Bundles (https://www.kenney.nl/)\nBackground
-    music from Bitbasic (https://freemusicarchive.org/music/Bitbasic/Pixel_Mixel/07_Bitbasic_-_Pixel_Mixel_-_Pixel_Mixel/)\nDash
-    sfx from qubodup (https://freesound.org/people/qubodup/sounds/714258/)/nThank
+  m_text: 'Game programmed and designed by BigSkungus77.\n\nUsing the Kenney UI Pack
+    and Pico-8 Platformer Bundles (https://www.kenney.nl/)\nBackground music from
+    Bitbasic (https://freemusicarchive.org/music/Bitbasic/Pixel_Mixel/07_Bitbasic_-_Pixel_Mixel_-_Pixel_Mixel/)\nDash
+    sfx from qubodup (https://freesound.org/people/qubodup/sounds/714258/)\nEnemy
+    death sfx from CogFireStudios (https://freesound.org/people/CogFireStudios/sounds/676819/)\nDamage
+    sfx from Prof.Mudkip (https://freesound.org/people/Prof.Mudkip/sounds/398957/)\nThank
     you to playtesters Ben, Zoey, Richard, Sean, Cameron and Ethan! '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -496,8 +499,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2362,7 +2365,7 @@ MonoBehaviour:
   mainMenuElements: {fileID: 1657281382}
   instructionElements: {fileID: 774550477}
   creditsElements: {fileID: 317826516}
-  gameScene: Game
+  gameScene: Story
 --- !u!4 &1668676479
 Transform:
   m_ObjectHideFlags: 0
