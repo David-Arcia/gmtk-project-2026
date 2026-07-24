@@ -1,6 +1,13 @@
 using UnityEngine;
 using TMPro;
 
+public enum GroundingStates
+{
+    GROUNDED,
+    WALL_CLING,
+    AERIAL
+}
+
 public class Locomotion : MonoBehaviour
 {
     [SerializeField]
@@ -8,7 +15,17 @@ public class Locomotion : MonoBehaviour
     [SerializeField]
     public float dashImpulse = 1;
     [SerializeField]
+    public float dashCooldown = 0.5f;
+    [SerializeField]
+    public float dashLength = 0.25f;
+    [SerializeField]
+    public float jumpImpulse = 1;
+    [SerializeField]
+    public float jumpCooldown = 0.1f;
+    [SerializeField]
     public float rayDetectionSize = 0.05f;
+    [SerializeField]
+    public float damageKnockbackMultiplier = 0.75f;
     [SerializeField]
     public Vector2 DefaultResetPosition;
     [SerializeField]
@@ -18,27 +35,57 @@ public class Locomotion : MonoBehaviour
     [SerializeField]
     public TextMeshProUGUI resultText;
     private Input inputController;
-    private bool isDashing = false;
-    private bool touchingWall = false;
-    private bool touchingGround = false;
+    private bool isDashing;
+    private bool touchingWall;
+    private bool touchingGround;
     public Vector2 PlayerPosition { get; set; } = Vector2.zero;
     private Rigidbody2D rb;
     private EnergyController energyController;
     private SpriteAnimator spriteAnimator;
-    private LaunchArcController launchRenderer;
     private GameObject enterDoor;
+    private GroundingStates currGroundingState;
+    private GroundingStates prevGroundedState;
+    private bool dashUsedSinceLastAnchoring;
+    private bool dashOnCooldown;
+    private bool dashIframesEnded;
+    private float dashCooldownCounter;
+    private float dashLengthCounter;
+    private Vector2 prevPlayerPos;
+    private float jumpCounter;
+    private bool jumpOnCooldown;
+    private PlayerAudioController audioController;
+    private bool endScreenShown;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        currGroundingState = GroundingStates.GROUNDED;
+        prevGroundedState = GroundingStates.GROUNDED;
+        touchingWall = false;
+        touchingGround = false;
+        isDashing = false;
+        dashUsedSinceLastAnchoring = false;
+        dashOnCooldown = false;
+        dashIframesEnded = false;
+        dashCooldownCounter = 0f;
+        dashLengthCounter = 0f;
         inputController = GetComponent<Input>();
         rb = GetComponent<Rigidbody2D>();
         energyController = GetComponent<EnergyController>();
         spriteAnimator = GetComponent<SpriteAnimator>();
-        launchRenderer = GetComponent<LaunchArcController>();
+        spriteAnimator.SetRigidBody(rb);
         enterDoor = GameObject.Find("EnterDoor");
+        audioController = GetComponent<PlayerAudioController>();
+        prevPlayerPos = Vector2.zero;
+        jumpCounter = 0f;
+        jumpOnCooldown = false;
+        endScreenShown = false;
         if (enterDoor)
         {
             rb.position = new Vector2(enterDoor.transform.position.x, enterDoor.transform.position.y + enterDoorOffset);
+        }
+        else
+        {
+            rb.position = DefaultResetPosition;
         }
 
     }
@@ -46,106 +93,116 @@ public class Locomotion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Sanity check
-        if (isDashing && Mathf.Abs(rb.linearVelocity.magnitude) < 0.01)
+        PlayerPosition = rb.position;
+        UpdateDash();
+        UpdateJump();
+        /*if (prevGroundedState != currGroundingState)
         {
-            isDashing = false;
-        }
-        PlayerPosition = gameObject.transform.position;
-        if (touchingGround || touchingWall)
+            Debug.Log("Current GroundingState:" + currGroundingState);
+        }*/
+
+        if (!isDashing)
         {
-            isDashing = false;
-            launchRenderer.EnableLineRender(true);
-        }
-        if (inputController.PressedDash && !isDashing)
-        {
-            isDashing = true;
-            Vector2 dashVector = (inputController.AimPosition - PlayerPosition).normalized * dashImpulse;
-            touchingGround = false;
-            touchingWall = false;
-            rb.AddForce(dashVector, ForceMode2D.Impulse);
-            launchRenderer.EnableLineRender(false);
-        }
-        if (!isDashing && Mathf.Abs(inputController.MoveVector.x) > 0.001 && !inputController.PressedDash)
-        {
+            //Handle AD movement
+            if (currGroundingState == GroundingStates.WALL_CLING)
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
+
             rb.linearVelocity = new Vector2(inputController.MoveVector.x * moveSpeed, rb.linearVelocity.y);
+            //Handle jump
+            if (currGroundingState == GroundingStates.GROUNDED && inputController.PressedJump && !jumpOnCooldown)
+            {
+                rb.AddForce(Vector2.up * jumpImpulse);
+                touchingGround = false;
+                jumpOnCooldown = true;
+            }
+
         }
-        if (Mathf.Abs(rb.linearVelocity.y) > 0.01)
+        if (energyController.EnergyAmount == 0 && !endScreenShown)
         {
-            if (rb.linearVelocity.x > 0.01)
-            {
-                spriteAnimator.SetAerialSprite(false);
-            }
-            else
-            {
-                spriteAnimator.SetAerialSprite(true);
-            }
+            ShowEndScreen(false);
+            endScreenShown = true;
+        }
+        prevGroundedState = currGroundingState;
+        prevPlayerPos = PlayerPosition;
+
+        //Animatesprites
+        float xdir = rb.linearVelocity.x;
+        bool flip = xdir < 0;
+        if (isDashing)
+        {
+            spriteAnimator.SetAerialSprite(flip);
         }
         else
         {
-            if (rb.linearVelocity.x > 0.01)
+            if (Mathf.Abs(xdir) > 0.001)
             {
-                spriteAnimator.SetGroundedDirSprite(false);
+                spriteAnimator.SetGroundedDirSprite(flip);
             }
-            else if (rb.linearVelocity.x < -0.01)
-            {
-                spriteAnimator.SetGroundedDirSprite(true);
-            } else
+            else
             {
                 spriteAnimator.SetNeutralSprite();
             }
         }
-
-        if (energyController.EnergyAmount == 0)
-        {
-            ShowEndScreen(false);
-        }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        ColliderEnterExitCheck(collision);
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        ColliderEnterExitCheck(collision);
+    }
+
+    void ColliderEnterExitCheck(Collision2D collision)
     {
         if (collision.collider.tag == "Terrain")
         {
 
             //Shoot rays to check which sides have been touched
-            RaycastHit2D hitDown = Physics2D.Raycast(PlayerPosition, Vector2.down, rayDetectionSize);
-            RaycastHit2D hitRight = Physics2D.Raycast(PlayerPosition, Vector2.right, rayDetectionSize);
-            RaycastHit2D hitLeft = Physics2D.Raycast(PlayerPosition, Vector2.left, rayDetectionSize);
+            RaycastHit2D[] hitsDown = Physics2D.RaycastAll(PlayerPosition, Vector2.down, rayDetectionSize);
+            RaycastHit2D[] hitsRight = Physics2D.RaycastAll(PlayerPosition, Vector2.right, rayDetectionSize);
+            RaycastHit2D[] hitsLeft = Physics2D.RaycastAll(PlayerPosition, Vector2.left, rayDetectionSize);
 
-            if (hitDown)
+            if (CheckHitArrayForTag(hitsDown, "Terrain"))
             {
-                touchingGround = true;
+                currGroundingState = GroundingStates.GROUNDED;
+            }
+            else if (CheckHitArrayForTag(hitsRight, "Terrain") || CheckHitArrayForTag(hitsLeft, "Terrain"))
+            {
+                currGroundingState = GroundingStates.WALL_CLING;
             }
             else
             {
-                touchingGround = false;
-            }
-
-            if (hitRight || hitLeft)
-            {
-                touchingWall = true;
-            }
-            else
-            {
-                touchingWall = false;
+                currGroundingState = GroundingStates.AERIAL;
             }
         }
     }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.tag == "Enemy")
+        if (collider.tag == "Spike")
+        {
+            energyController.RemoveEnergyFromCollisionWithFoe();
+            ApplyDamageImpulse();
+        }
+        else if (collider.tag == "Enemy")
         {
             if (isDashing)
             {
                 energyController.AddEnergyFromFallenFoe();
                 Destroy(collider.gameObject);
-            } else
+            }
+            else
             {
                 energyController.RemoveEnergyFromCollisionWithFoe();
+                ApplyDamageImpulse();
             }
         }
-        if (collider.tag == "Exit")
+        else if (collider.tag == "Exit")
         {
             ShowEndScreen(true);
         }
@@ -158,9 +215,137 @@ public class Locomotion : MonoBehaviour
         if (hasWon)
         {
             resultText.text = "YOU WIN!";
-        } else
+        }
+        else
         {
             resultText.text = "YOU LOSE";
         }
+    }
+
+    private void HandleGroundingState()
+    {
+        if (touchingGround)
+        {
+            currGroundingState = GroundingStates.GROUNDED;
+        }
+        else if (touchingWall)
+        {
+            currGroundingState = GroundingStates.WALL_CLING;
+        }
+        else
+        {
+            currGroundingState = GroundingStates.AERIAL;
+        }
+    }
+
+    private bool CheckHitArrayForTag(RaycastHit2D[] array, string tag)
+    {
+        bool output = false;
+        foreach (RaycastHit2D hit in array)
+        {
+            if (hit.collider.tag == tag)
+            {
+                output = true;
+            }
+        }
+        return output;
+    }
+
+    private void StartDash(Vector2 direction)
+    {
+        isDashing = true;
+        rb.gravityScale = 0;
+        rb.AddForce(direction.normalized * dashImpulse);
+        dashOnCooldown = true;
+        dashUsedSinceLastAnchoring = true;
+        currGroundingState = GroundingStates.AERIAL;
+        spriteAnimator.DrawGhostSprites(true);
+        audioController.PlayAudio(AudioEffects.DASH);
+    }
+
+    private void EndDash()
+    {
+        isDashing = false;
+        rb.gravityScale = 1;
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+        spriteAnimator.DrawGhostSprites(false);
+    }
+
+    private bool CanDash()
+    {
+        return !isDashing && !dashOnCooldown && !dashUsedSinceLastAnchoring;
+    }
+
+    private bool ShouldDashEnd()
+    {
+        return dashIframesEnded;
+    }
+
+    private void HandleDashCooldowns()
+    {
+        if (dashOnCooldown)
+        {
+            dashCooldownCounter += Time.deltaTime;
+            if (dashCooldownCounter >= dashCooldown)
+            {
+                dashOnCooldown = false;
+            }
+        }
+        else
+        {
+            dashCooldownCounter = 0;
+        }
+
+        if (isDashing)
+        {
+            dashLengthCounter += Time.deltaTime;
+            if (dashLengthCounter >= dashLength)
+            {
+                dashIframesEnded = true;
+            }
+        }
+        else
+        {
+            dashLengthCounter = 0;
+        }
+    }
+
+    private void UpdateDash()
+    {
+        HandleDashCooldowns();
+        if (currGroundingState != GroundingStates.AERIAL)
+        {
+            dashUsedSinceLastAnchoring = false;
+        }
+        if (CanDash() && inputController.PressedDash)
+        {
+            StartDash(inputController.AimPosition - PlayerPosition);
+        }
+        else if (ShouldDashEnd())
+        {
+            EndDash();
+            dashIframesEnded = false;
+        }
+    }
+
+    private void UpdateJump()
+    {
+        if (jumpOnCooldown)
+        {
+            jumpCounter += Time.deltaTime;
+            if (jumpCounter >= jumpCooldown)
+            {
+                jumpOnCooldown = false;
+            }
+        }
+        else
+        {
+            jumpCounter = 0;
+        }
+    }
+    
+    private void ApplyDamageImpulse()
+    {
+        //Knock away from damage source
     }
 }

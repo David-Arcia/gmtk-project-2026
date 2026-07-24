@@ -20,7 +20,7 @@ public class FloatUpAndDown : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float newY = initPosition.y + Mathf.Sin((Time.time-initTime)*frequency) * amplidtude;
-        rb.MovePosition(initPosition + new Vector2(initPosition.x, newY));
+        float newY = Mathf.Sin((Time.time-initTime)*frequency) * amplidtude;
+        rb.MovePosition(initPosition + new Vector2(0, newY));
     }
 }

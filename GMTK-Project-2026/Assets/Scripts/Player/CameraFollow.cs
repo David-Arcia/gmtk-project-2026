@@ -13,7 +13,7 @@ public class CameraFollow : MonoBehaviour
     [SerializeField]
     public float maxX;
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         float xTarget = 0;
         if (gameObject.transform.position.x > minX)

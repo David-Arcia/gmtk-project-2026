@@ -22,20 +22,26 @@ public class Input : MonoBehaviour
     public Vector2 MoveVector { get; set; }
     public bool PressedDash { get; set; }
     public bool PressedReset { get; set; }
+    public bool PressedJump { get; set; }
     private bool isPressingDash = false;
     private bool onDashCoolDown = false;
     private bool isPressingReset = false;
     private bool onResetCoolDown = false;
+    private bool isPressingJump = false;
+    private bool onJumpCooldown = false;
     private InputAction moveAction;
     private InputAction aimAction;
     private InputAction dashAction;
     private InputAction resetAction;
     [SerializeField]
-    public float dashCooldown = 1f;
+    public float dashInputCooldown = 0.25f;
     [SerializeField]
-    public float resetCooldown = 1f;
+    public float resetInputCooldown = 0.25f;
+    [SerializeField]
+    public float jumpInputCooldown = 0.25f;
     private float dashTimer = 0f;
     private float resetTimer = 0f;
+    private float jumpTimer = 0f;
 
     void Start()
     {
@@ -47,6 +53,8 @@ public class Input : MonoBehaviour
 
         RegisterInputActions();
         PressedDash = false;
+        PressedReset = false;
+        PressedJump = false;
     }
 
     void RegisterInputActions()
@@ -73,12 +81,15 @@ public class Input : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AimPosition = camera.ScreenToWorldPoint(aimAction.ReadValue<Vector2>());
+        Vector2 aimPos = aimAction.ReadValue<Vector2>();
+        AimPosition = camera.ScreenToWorldPoint(new Vector3(aimPos.x, aimPos.y, -(camera.gameObject.transform.position.z)));
+        isPressingJump = MoveVector.y > 0;
+
         if (onDashCoolDown)
         {
             PressedDash = false;
             dashTimer += Time.deltaTime;
-            if (dashTimer >= dashCooldown)
+            if (dashTimer >= dashInputCooldown)
             {
                 dashTimer = 0;
                 onDashCoolDown = false;
@@ -97,7 +108,7 @@ public class Input : MonoBehaviour
         {
             PressedReset = false;
             resetTimer += Time.deltaTime;
-            if (resetTimer >= resetCooldown)
+            if (resetTimer >= resetInputCooldown)
             {
                 resetTimer = 0;
                 onResetCoolDown = false;
@@ -109,6 +120,25 @@ public class Input : MonoBehaviour
             {
                 PressedReset = true;
                 onResetCoolDown = true;
+            }
+        }
+
+        if (onJumpCooldown)
+        {
+            PressedJump = false;
+            jumpTimer += Time.deltaTime;
+            if (jumpTimer >= jumpInputCooldown)
+            {
+                jumpTimer = 0;
+                onJumpCooldown = false;
+            }
+        }
+        else
+        {
+            if (isPressingJump)
+            {
+                PressedJump = true;
+                onJumpCooldown = true;
             }
         }
     }
