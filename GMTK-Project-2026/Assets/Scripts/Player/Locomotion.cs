@@ -27,9 +27,13 @@ public class Locomotion : MonoBehaviour
     [SerializeField]
     public float damageKnockbackForce = 12f;
     [SerializeField]
+    public float iFrameLength = 0.5f;
+    [SerializeField]
     public float damagedStateLength = 1f;
     [SerializeField]
     public Vector2 DefaultResetPosition;
+    [SerializeField]
+    public float killHeight = -0.5f;
     [SerializeField]
     public float enterDoorOffset = 0.04f;
     [SerializeField]
@@ -59,6 +63,8 @@ public class Locomotion : MonoBehaviour
     private bool endScreenShown;
     private float damagedStateCounter;
     private bool isDamaged;
+    private bool isInIFrame;
+    private float iFrameCounter;
     private DeathParticleSpawner particleSpawner;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -87,6 +93,8 @@ public class Locomotion : MonoBehaviour
         endScreenShown = false;
         damagedStateCounter = 0f;
         isDamaged = false;
+        isInIFrame = false;
+        iFrameCounter = 0;
         if (enterDoor)
         {
             rb.position = new Vector2(enterDoor.transform.position.x, enterDoor.transform.position.y + enterDoorOffset);
@@ -95,6 +103,7 @@ public class Locomotion : MonoBehaviour
         {
             rb.position = DefaultResetPosition;
         }
+        Time.timeScale = 1f;
 
     }
 
@@ -102,7 +111,12 @@ public class Locomotion : MonoBehaviour
     void Update()
     {
         PlayerPosition = rb.position;
+        if (PlayerPosition.y < killHeight)
+        {
+            energyController.EnergyAmount = 0;
+        }
         UpdateDamagedState();
+        UpdateIFrame();
         UpdateDash();
         UpdateJump();
         /*if (prevGroundedState != currGroundingState)
@@ -196,7 +210,6 @@ public class Locomotion : MonoBehaviour
         Collider2D collider = collision.collider;
         if (collider.tag == "Spike")
         {
-            energyController.RemoveEnergyFromCollisionWithFoe();
             ApplyDamageImpulse(collider.gameObject.transform.position);
         }
     }
@@ -207,20 +220,10 @@ public class Locomotion : MonoBehaviour
         {
             if (isDashing && !IsTouchingInBetweenSpike(collider))
             {
-                energyController.AddEnergyFromFallenFoe();
-                bool isRechargeEnemy = false;
-                if (collider.gameObject.GetComponent<RechargeDashEnemy>())
-                {
-                    isRechargeEnemy = true;
-                    ResetDash();
-                }
-                Destroy(collider.gameObject);
-                particleSpawner.RequestParticleEffect(collider.gameObject.transform.position, isRechargeEnemy);
-                audioController.PlayAudio(AudioEffects.ENEMY_DEATH);
+                KillEnemy(collider);
             }
             else
             {
-                energyController.RemoveEnergyFromCollisionWithFoe();
                 ApplyDamageImpulse(collider.gameObject.transform.position);
             }
         }
@@ -336,7 +339,7 @@ public class Locomotion : MonoBehaviour
     private void UpdateDash()
     {
         HandleDashCooldowns();
-        if (currGroundingState != GroundingStates.AERIAL)
+        if (currGroundingState != GroundingStates.AERIAL && !isDashing)
         {
             dashUsedSinceLastAnchoring = false;
         }
@@ -369,13 +372,34 @@ public class Locomotion : MonoBehaviour
 
     private void ApplyDamageImpulse(Vector2 enemyLocation)
     {
+        if (isInIFrame)
+        {
+            return;
+        }
         //Knock away and set damaged state
         isDamaged = true;
         spriteAnimator.SetDamaged(true);
         Vector2 knockBackVector = (PlayerPosition - enemyLocation).normalized * damageKnockbackForce;
+        energyController.RemoveEnergyFromCollisionWithFoe();
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(knockBackVector);
         audioController.PlayAudio(AudioEffects.HURT);
+        isInIFrame = true;
+    }
+
+    private void KillEnemy(Collider2D collider)
+    {
+        energyController.AddEnergyFromFallenFoe();
+        bool isRechargeEnemy = false;
+        if (collider.gameObject.GetComponent<RechargeDashEnemy>())
+        {
+            isRechargeEnemy = true;
+            ResetDash();
+        }
+        Destroy(collider.gameObject);
+        isInIFrame = true;
+        particleSpawner.RequestParticleEffect(collider.gameObject.transform.position, isRechargeEnemy);
+        audioController.PlayAudio(AudioEffects.ENEMY_DEATH);
     }
 
     private void UpdateDamagedState()
@@ -397,7 +421,7 @@ public class Locomotion : MonoBehaviour
 
     private Vector2? IsTouchingSpike()
     {
-        ContactFilter2D filter = ContactFilter2D.noFilter; 
+        ContactFilter2D filter = ContactFilter2D.noFilter;
         Collider2D[] results = new Collider2D[10];
         int overlapCount = rb.Overlap(filter, results);
         Vector2? output = null;
@@ -433,5 +457,21 @@ public class Locomotion : MonoBehaviour
     {
         dashUsedSinceLastAnchoring = false;
         dashOnCooldown = false;
+    }
+
+    private void UpdateIFrame()
+    {
+        if (isInIFrame)
+        {
+            iFrameCounter += Time.deltaTime;
+            if (iFrameCounter >= iFrameLength)
+            {
+                isInIFrame = false;
+            }
+        }
+        else
+        {
+            iFrameCounter = 0;
+        }
     }
 }
