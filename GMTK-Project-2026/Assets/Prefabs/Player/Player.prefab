@@ -145,11 +145,14 @@ MonoBehaviour:
   dashLength: 0.15
   jumpImpulse: 18
   jumpCooldown: 0.1
-  rayDetectionSize: 0.06
+  downRayDetectionSize: 0.075
+  sideRayDetectionSize: 0.06
+  downRaySpacing: 0.03
   damageKnockbackForce: 12
   iFrameLength: 0.5
   damagedStateLength: 0.25
   DefaultResetPosition: {x: 0, y: 0}
+  killHeight: -1
   enterDoorOffset: 0.05
   levelCompleteScreen: {fileID: 0}
   resultText: {fileID: 0}
@@ -230,10 +233,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnergyController
   MaxEnergy: 100
   EnergyAmount: 0
-  energyDepletionRate: 2
-  enemyEnergyReplenishment: 15
-  enemyEnergyDamage: 25
-  energyFillBarUI: {fileID: 0}
+  energyDepletionRate: 5
+  enemyEnergyReplenishment: 20
+  enemyEnergyDamage: 15
 --- !u!114 &8712576406890470823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +255,7 @@ MonoBehaviour:
   ghostSpriteSpacingMultiplier: 0.01
   ghostrSpritePrefab: {fileID: 6173872851288892068, guid: 34258902d638aaa4badb4f87220d0234, type: 3}
   damagedColor: {r: 1, g: 0, b: 0, a: 0.65882355}
+  dashOnCooldownColor: {r: 1, g: 1, b: 1, a: 0.32941177}
 --- !u!114 &7556847548690962539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,7 +271,7 @@ MonoBehaviour:
   camera: {fileID: 0}
   minY: 0
   maxY: 5
-  minX: 0
+  minX: -4
   maxX: 5.4
 --- !u!114 &331923869710259722
 MonoBehaviour:
@@ -282,6 +285,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ddb700b667e4e44a8bbcc5e482ab924, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResetLevel
+  pauseButton: {fileID: 0}
+  pauseMenu: {fileID: 0}
 --- !u!114 &864914634474339425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,7 +315,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.75
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -423,6 +428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnergyBarController
   segments: 10
   radius: 0.08
+  rotationOffset: 90
   renderer: {fileID: 6473688067674864404}
 --- !u!1 &3605535617701917384
 GameObject:

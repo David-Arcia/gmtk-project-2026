@@ -297,7 +297,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: d78748dcd43b23d4e85d17868a0937c1, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -466,12 +466,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Game programmed and designed by BigSkungus77.\n\nUsing the Kenney UI Pack
-    and Pico-8 Platformer Bundles (https://www.kenney.nl/)\nBackground music from
-    Bitbasic (https://freemusicarchive.org/music/Bitbasic/Pixel_Mixel/07_Bitbasic_-_Pixel_Mixel_-_Pixel_Mixel/)\nDash
+  m_text: 'Game programmed and designed by BigSkungus77.\n\nUsing the Kenney Pico-8
+    Platformer Bundle (https://www.kenney.nl/assets/pico-8-platformer)\nUsing the
+    Kenney UI Pack Bundle (https://www.kenney.nl/assets/ui-pack)\nBackground music
+    from Bitbasic (https://freemusicarchive.org/music/Bitbasic/Pixel_Mixel/07_Bitbasic_-_Pixel_Mixel_-_Pixel_Mixel/)\nDash
     sfx from qubodup (https://freesound.org/people/qubodup/sounds/714258/)\nEnemy
     death sfx from CogFireStudios (https://freesound.org/people/CogFireStudios/sounds/676819/)\nDamage
-    sfx from Prof.Mudkip (https://freesound.org/people/Prof.Mudkip/sounds/398957/)\nThank
+    sfx from Prof.Mudkip (https://freesound.org/people/Prof.Mudkip/sounds/398957/)\n\nThank
     you to playtesters Ben, Zoey, Richard, Sean, Cameron and Ethan! '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

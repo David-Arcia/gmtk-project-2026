@@ -16,6 +16,8 @@ public class SpriteAnimator : MonoBehaviour
     public GameObject ghostrSpritePrefab;
     [SerializeField]
     public Color damagedColor;
+    [SerializeField]
+    public Color dashOnCooldownColor;
     private GameObject[] ghostSpriteObjects;
     private SpriteRenderer renderer;
     private Rigidbody2D rb;
@@ -95,6 +97,17 @@ public class SpriteAnimator : MonoBehaviour
             renderer.color = damagedColor;
         }
         else
+        {
+            renderer.color = Color.white;
+        }
+    }
+
+    public void SetDashOnCooldown(bool onCD)
+    {
+        if (onCD)
+        {
+            renderer.color = dashOnCooldownColor;
+        } else
         {
             renderer.color = Color.white;
         }

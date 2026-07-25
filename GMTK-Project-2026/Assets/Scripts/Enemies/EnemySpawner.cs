@@ -18,6 +18,7 @@ public class EnemySpawner : MonoBehaviour
         foreach (Vector2 pos in positions)
         {
             GameObject newEnemy = Instantiate(enemyPrefab, pos, Quaternion.identity);
+            newEnemy.SetActive(true);
             enemyTracker.Add(pos, newEnemy);
         }
     }
@@ -36,6 +37,7 @@ public class EnemySpawner : MonoBehaviour
                 if (!kvp.Value)
                 {
                     GameObject newEnemy = Instantiate(enemyPrefab, kvp.Key, Quaternion.identity);
+                    newEnemy.SetActive(true);
                     keysChanged.Add(kvp.Key);
                     newOBjs.Add(newEnemy);
                 }

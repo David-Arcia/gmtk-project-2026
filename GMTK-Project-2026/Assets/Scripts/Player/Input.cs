@@ -25,6 +25,7 @@ public class Input : MonoBehaviour
     public bool PressedJump { get; set; }
     private bool isPressingDash = false;
     private bool prevIsPressingDash = false;
+    private bool prevIsPressingJump = false;
     private bool onDashCoolDown = false;
     private bool isPressingReset = false;
     private bool onResetCoolDown = false;
@@ -136,12 +137,13 @@ public class Input : MonoBehaviour
         }
         else
         {
-            if (isPressingJump)
+            if (isPressingJump && !prevIsPressingJump)
             {
                 PressedJump = true;
                 onJumpCooldown = true;
             }
         }
         prevIsPressingDash = isPressingDash;
+        prevIsPressingJump = isPressingJump;
     }
 }

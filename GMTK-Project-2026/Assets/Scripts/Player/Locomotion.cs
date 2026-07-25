@@ -23,7 +23,13 @@ public class Locomotion : MonoBehaviour
     [SerializeField]
     public float jumpCooldown = 0.1f;
     [SerializeField]
-    public float rayDetectionSize = 0.05f;
+    public float downRayDetectionSize = 0.05f;
+    [SerializeField]
+    public float sideRayDetectionSize = 0.06f;
+    [SerializeField]
+    public float downRaySpacing = 0.03f;
+    [SerializeField]
+    public float sideRaySpacing = 0.04f;
     [SerializeField]
     public float damageKnockbackForce = 12f;
     [SerializeField]
@@ -119,6 +125,10 @@ public class Locomotion : MonoBehaviour
         UpdateIFrame();
         UpdateDash();
         UpdateJump();
+        if (currGroundingState == GroundingStates.WALL_CLING)
+        {
+            GroundingRaycastChecks();
+        }
         /*if (prevGroundedState != currGroundingState)
         {
             Debug.Log("Current GroundingState:" + currGroundingState);
@@ -168,11 +178,22 @@ public class Locomotion : MonoBehaviour
                 spriteAnimator.SetNeutralSprite();
             }
         }
+        if (!isDamaged)
+        {
+
+            spriteAnimator.SetDashOnCooldown(!CanDash());
+        }
+
     }
 
     void OnCollisionStay2D(Collision2D collision)
     {
         ColliderEnterExitCheck(collision);
+        Collider2D collider = collision.collider;
+        if (collider.tag == "Spike")
+        {
+            ApplyDamageImpulse(collider.gameObject.transform.position);
+        }
     }
 
     void OnCollisionExit2D(Collision2D collision)
@@ -184,24 +205,31 @@ public class Locomotion : MonoBehaviour
     {
         if (collision.collider.tag == "Terrain")
         {
+            GroundingRaycastChecks();
+        }
+    }
 
-            //Shoot rays to check which sides have been touched
-            RaycastHit2D[] hitsDown = Physics2D.RaycastAll(PlayerPosition, Vector2.down, rayDetectionSize);
-            RaycastHit2D[] hitsRight = Physics2D.RaycastAll(PlayerPosition, Vector2.right, rayDetectionSize);
-            RaycastHit2D[] hitsLeft = Physics2D.RaycastAll(PlayerPosition, Vector2.left, rayDetectionSize);
+    void GroundingRaycastChecks()
+    {
+        //Shoot rays to check which sides have been touched
+        RaycastHit2D[] hitsDown1 = Physics2D.RaycastAll(PlayerPosition + new Vector2(downRaySpacing, 0), Vector2.down, downRayDetectionSize);
+        RaycastHit2D[] hitsDown2 = Physics2D.RaycastAll(PlayerPosition + new Vector2(-downRaySpacing, 0), Vector2.down, downRayDetectionSize);
+        RaycastHit2D[] hitsRight1 = Physics2D.RaycastAll(PlayerPosition + new Vector2(0, sideRaySpacing), Vector2.right, sideRayDetectionSize);
+        RaycastHit2D[] hitsLeft1 = Physics2D.RaycastAll(PlayerPosition + new Vector2(0, sideRaySpacing), Vector2.left, sideRayDetectionSize);
+        RaycastHit2D[] hitsRight2 = Physics2D.RaycastAll(PlayerPosition + new Vector2(0, -sideRaySpacing), Vector2.right, sideRayDetectionSize);
+        RaycastHit2D[] hitsLeft2 = Physics2D.RaycastAll(PlayerPosition + new Vector2(0, -sideRaySpacing), Vector2.left, sideRayDetectionSize);
 
-            if (CheckHitArrayForTag(hitsDown, "Terrain"))
-            {
-                currGroundingState = GroundingStates.GROUNDED;
-            }
-            else if (CheckHitArrayForTag(hitsRight, "Terrain") || CheckHitArrayForTag(hitsLeft, "Terrain"))
-            {
-                currGroundingState = GroundingStates.WALL_CLING;
-            }
-            else
-            {
-                currGroundingState = GroundingStates.AERIAL;
-            }
+        if (CheckHitArrayForTag(hitsDown1, "Terrain") || CheckHitArrayForTag(hitsDown2, "Terrain"))
+        {
+            currGroundingState = GroundingStates.GROUNDED;
+        }
+        else if (CheckHitArrayForTag(hitsRight1, "Terrain") || CheckHitArrayForTag(hitsLeft1, "Terrain") || CheckHitArrayForTag(hitsRight2, "Terrain") || CheckHitArrayForTag(hitsLeft2, "Terrain"))
+        {
+            currGroundingState = GroundingStates.WALL_CLING;
+        }
+        else
+        {
+            currGroundingState = GroundingStates.AERIAL;
         }
     }
 
