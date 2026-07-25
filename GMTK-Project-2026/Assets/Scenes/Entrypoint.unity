@@ -297,7 +297,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: d78748dcd43b23d4e85d17868a0937c1, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 0.25
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -3152,10 +3152,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Use WASD or Arrow Keys to move.\nUse your mouse left button to dash.\nCling
-    automatically to walls.\nPress movement keys towards a wall to stop sliding.\nYou
-    will lose energy as time goes on.\nKill enemies with your dash to gain more energy.\nPress
-    R to reset the map.\nReach the goal to complete the level!
+  m_text: Use AD or Left and Right Arrow Keys to move.\nUse W, Up Arrow, or Space
+    to jump.\nUse your mouse left button to dash.\nCling automatically to walls.\nPress
+    movement keys towards a wall to stop sliding.\nYou will lose energy as time goes
+    on.\nKill enemies with your dash to gain more energy.\nPress R to reset the map.\nReach
+    the goal to complete the level!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

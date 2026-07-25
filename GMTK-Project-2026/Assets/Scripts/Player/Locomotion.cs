@@ -265,13 +265,15 @@ public class Locomotion : MonoBehaviour
     {
         levelCompleteScreen.SetActive(true);
         Time.timeScale = 0f;
+        GameObject nextLevelButton = GameObject.Find("Canvas/LevelComplete/NextLevel");
+        nextLevelButton.SetActive(hasWon);
         if (hasWon)
         {
             resultText.text = "YOU WIN!";
         }
         else
         {
-            resultText.text = "YOU LOSE";
+            resultText.text = "YOU LOSE!";
         }
     }
 

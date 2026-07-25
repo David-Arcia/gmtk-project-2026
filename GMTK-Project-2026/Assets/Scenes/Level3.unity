@@ -8045,8 +8045,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7556847548690962539, guid: 478c53032b0601442a7fb7f58c80ec09, type: 3}
+      propertyPath: maxX
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7556847548690962539, guid: 478c53032b0601442a7fb7f58c80ec09, type: 3}
       propertyPath: minX
-      value: -2.8
+      value: -2.75
       objectReference: {fileID: 0}
     - target: {fileID: 7556847548690962539, guid: 478c53032b0601442a7fb7f58c80ec09, type: 3}
       propertyPath: camera

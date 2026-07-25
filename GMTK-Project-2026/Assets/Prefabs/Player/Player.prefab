@@ -148,6 +148,7 @@ MonoBehaviour:
   downRayDetectionSize: 0.075
   sideRayDetectionSize: 0.06
   downRaySpacing: 0.03
+  sideRaySpacing: 0.04
   damageKnockbackForce: 12
   iFrameLength: 0.5
   damagedStateLength: 0.25
@@ -233,7 +234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnergyController
   MaxEnergy: 100
   EnergyAmount: 0
-  energyDepletionRate: 5
+  energyDepletionRate: 10
   enemyEnergyReplenishment: 20
   enemyEnergyDamage: 15
 --- !u!114 &8712576406890470823
